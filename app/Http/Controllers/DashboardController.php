@@ -18,8 +18,30 @@ class DashboardController extends Controller {
     }
 
     public function table(Request $request){
+        $users = User::query()
+        ->when($request->input('search'), function ($query, $search) {
+            $query->where('name','like', '%' . $search . '%')
+            ->orWhere('username','like', '%' . $search . '%')
+            ->orWhere('email','like', '%' . $search . '%');
+        })
+        ->with('church')
+        ->paginate(10)
+        ->through(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'email' => $user->email,
+                'type' => $user->type,
+                'church' => [
+                    'church_id' => $user->church->church_id,
+                    'name' => $user->church->name
+                ]                
+            ];
+        });
+        
         $data = [
-            'users' => User::with('church')->get()
+            'users' => $users
         ];
         return Inertia::render('Table',$data);
     }
