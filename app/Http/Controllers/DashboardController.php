@@ -25,7 +25,7 @@ class DashboardController extends Controller {
             ->orWhere('email','like', '%' . $search . '%');
         })
         ->with('church')
-        ->paginate(10)
+        ->paginate(10)->onEachSide(5)
         ->through(function ($user) {
             return [
                 'id' => $user->id,
@@ -39,7 +39,7 @@ class DashboardController extends Controller {
                 ]                
             ];
         });
-        
+        // return $users;
         $data = [
             'users' => $users
         ];
