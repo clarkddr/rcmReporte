@@ -41,7 +41,8 @@ class DashboardController extends Controller {
         });
         // return $users;
         $data = [
-            'users' => $users
+            'users' => $users,
+            'filter' => $request->only(['search'])
         ];
         return Inertia::render('Table',$data);
     }

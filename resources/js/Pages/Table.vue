@@ -18,9 +18,8 @@ import { initFlowbite } from 'flowbite';
 const modalEliminar = ref(false);
 
 const props = defineProps({
-    users: {
-        type: Object
-    }
+    users: {type: Object },
+    filter: {type: Object }
 });
 
 const addModalState = ref(false);
@@ -87,7 +86,7 @@ const hideDeleteModal = () => {
     deleteModalState.value = false;
 }
     
-const search = ref('');
+const search = ref(props.filter.search);
 watch(search, value => {    
     router.get('/table', {search:value},{ preserveState: true});
     
@@ -120,7 +119,7 @@ watch(search, value => {
                                 </svg>        
                                 Agregar
                             </button>                            
-                            <div class="flex items-center space-x-3 w-full md:w-auto">
+                            <!-- <div class="flex items-center space-x-3 w-full md:w-auto">
                                 <button id="actionsDropdownButton" data-dropdown-toggle="actionsDropdown" class="w-full md:w-auto flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700" type="button">
                                     <svg class="-ml-1 mr-1.5 w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                         <path clip-rule="evenodd" fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" />
@@ -171,7 +170,7 @@ watch(search, value => {
                                         </li>
                                     </ul>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
                     <div class="overflow-x-auto">
@@ -218,7 +217,8 @@ watch(search, value => {
                         </table>
                     </div>
                     <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
-                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                        <span v-show="users.total === 0" class="font-semibold text-gray-900 dark:text-white">{{ 'No hay resultados' }}</span>
+                        <span v-show="users.total > 0" class="text-sm font-normal text-gray-500 dark:text-gray-400">
                             Mostrando
                             <span class="font-semibold text-gray-900 dark:text-white">{{ users.from+' a '+users.to }}</span>
                             de
