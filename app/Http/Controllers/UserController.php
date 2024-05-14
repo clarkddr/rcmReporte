@@ -24,7 +24,9 @@ class UserController extends Controller
         $user->password = 'iafcj';
         $user->church_id = Auth::user()->church_id;
         $user->save();
-        return redirect()->back();
+        $request->session()->flash('flash.banner', 'Usuario guardado exitosamente!!');
+        $request->session()->flash('flash.bannerStyle', 'success');
+        return redirect()->route('table');
     }
     public function update(Request $request){
         $user = User::findOrFail($request->id);        
@@ -39,10 +41,14 @@ class UserController extends Controller
         $user->email = $request->email;
         $user->type = $request->type;
         $user->saveOrFail();
-        return redirect()->route('table');
+        $request->session()->flash('flash.banner', 'Usuario actualizado exitosamente!!');
+        $request->session()->flash('flash.bannerStyle', 'success');
+        return redirect()->back();
     }
-    public function destroy(User $user){
+    public function destroy(Request $request,User $user){
         $user->delete();
+        $request->session()->flash('flash.banner', 'Usuario eliminado exitosamente!!');
+        $request->session()->flash('flash.bannerStyle', 'success');
         return redirect()->back();
     }
 }

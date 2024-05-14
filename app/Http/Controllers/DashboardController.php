@@ -11,7 +11,8 @@ use App\Models\Church;
 class DashboardController extends Controller {
     public function index(){
         $data = [
-            'users' =>  User::with('church')->find(2)
+            'users' =>  User::with('church')->find(2),
+            'date' => now()->toTimeString()
         ];
 
         return Inertia::render('Dashboard',$data);
@@ -23,7 +24,7 @@ class DashboardController extends Controller {
             $query->where('name','like', '%' . $search . '%')
             ->orWhere('username','like', '%' . $search . '%')
             ->orWhere('email','like', '%' . $search . '%');
-        })
+        })->orderBy('created_at','desc')
         ->with('church')
         ->paginate(10)->onEachSide(5)
         ->through(function ($user) {
