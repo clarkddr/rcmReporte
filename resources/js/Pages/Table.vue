@@ -119,6 +119,7 @@ const hideDeleteModal = () => {
     buttonDelete.value.text = 'Eliminar';
 }
     
+const searchInput = ref(null);
 const search = ref(props.filter.search);
 watch(search, value => {    
     router.get('/table', {search:value},{ preserveState: true});
@@ -126,6 +127,10 @@ watch(search, value => {
 });
 const cleanFilter = () => {
     search.value = '';
+    changeFocusToSearch();
+}
+const changeFocusToSearch = () => {
+    searchInput.value.focus();
 }
 
 const addSubmitButton = ref({
@@ -174,7 +179,7 @@ const changeDeleteButton = () => {
                                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                    <input v-model="search" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Buscar por nombre, usuario o correo">                                    
+                                    <input v-model="search" ref="searchInput" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Buscar por nombre, usuario o correo">                                    
                                 </div>
                                 <button @click="cleanFilter" type="button" class="mx-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-full text-xs p-1.5 text-center inline-flex items-center me-1 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     <svg class="p-0 m-0 w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4"/></svg>                                    <span class="sr-only">Icon description</span>
