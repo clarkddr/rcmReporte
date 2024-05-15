@@ -7,12 +7,13 @@ use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\User;
 use App\Models\Church;
+use Carbon\Carbon;
 
 class DashboardController extends Controller {
     public function index(){
         $data = [
             'users' =>  User::with('church')->find(2),
-            'date' => now()->toTimeString()
+            'date' => now()->subMinute()->diffForHumans()
         ];
 
         return Inertia::render('Dashboard',$data);
@@ -26,7 +27,7 @@ class DashboardController extends Controller {
             ->orWhere('email','like', '%' . $search . '%');
         })->orderBy('created_at','desc')
         ->with('church')
-        ->paginate(10)->onEachSide(5)
+        ->paginate(10)->withQueryString()
         ->through(function ($user) {
             return [
                 'id' => $user->id,
@@ -37,7 +38,12 @@ class DashboardController extends Controller {
                 'church' => [
                     'church_id' => $user->church->church_id,
                     'name' => $user->church->name
-                ]                
+                ],
+                'created_at_human' => Carbon::parse($user->created_at)->diffForHumans(),
+                'updated_at_human' => Carbon::parse($user->updated_at)->diffForHumans(),
+                // 'created_at' => Carbon::parse($user->created_at)->toFormattedDayDateString(),
+                'created_at' => ucwords(Carbon::parse($user->created_at)->translatedFormat('D d F Y H:s')),
+                'updated_at' => Carbon::parse($user->updated_at)->toFormattedDayDateString()
             ];
         });
         // return $users;

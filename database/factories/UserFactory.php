@@ -33,6 +33,7 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'type' => 'user',
             'church_id' => 1,
+            'created_at' => fake()->dateTimeThisMonth(),
             'password' => static::$password ??= Hash::make('password'),
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
