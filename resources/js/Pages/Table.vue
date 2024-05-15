@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, nextTick } from 'vue';
-import { Head, Link, useForm, router } from '@inertiajs/vue3';
+import { Head, Link, useForm, router} from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/FlowbiteLayout.vue';
 import Modal from '@/Components/Modal.vue';
 import DialogModal from '@/Components/DialogModal.vue';
@@ -25,6 +25,8 @@ const showShowModal = (user) => {
      showUserInfo.value.username = user.username;
      showUserInfo.value.email = user.email;
      showUserInfo.value.type = user.type;
+     showUserInfo.value.created_at = user.created_at;
+     showUserInfo.value.updated_at = user.updated_at;
     };
 const hideShowModal = () => { showModalState.value = false};
 
@@ -48,6 +50,10 @@ const submit = () => {
             });
             addSubmitButton.value.status = false;
             addSubmitButton.value.text = 'Guardar Usuario';
+        },
+        onError: () => {
+            addSubmitButton.value.status = false;
+            addSubmitButton.value.text = 'Guardar Usuario';
         }
     })
 };
@@ -59,6 +65,7 @@ const updateForm = useForm({
         username: '',
         email: '',
         type: '',
+        updated_at: '',
     });
 const updateModalState = ref(false);
 const showUpdateModal = (user) => {
@@ -68,20 +75,23 @@ const showUpdateModal = (user) => {
      updateForm.username = user.username;
      updateForm.email = user.email;
      updateForm.type = user.type;
+     updateForm.updated_at = user.updated_at;   
     }
 const hideUpdateModal = () => { 
     updateModalState.value = false;
     updateForm.errors = {};
 }
+
 const submitUpdate = () => {
     changeEditButton();
     updateForm.post(route('user.update'), {
-        onSuccess: () => {
-            showUserInfo.value.id = updateForm.id;
-            showUserInfo.value.name = updateForm.name;
-            showUserInfo.value.username = updateForm.username;
-            showUserInfo.value.email = updateForm.email;
-            showUserInfo.value.type = updateForm.type;
+        onSuccess: (page) => {            
+            showUserInfo.value.id = page.props.jetstream.flash.user.id;
+            showUserInfo.value.name = page.props.jetstream.flash.user.name;
+            showUserInfo.value.username = page.props.jetstream.flash.user.username;
+            showUserInfo.value.email = page.props.jetstream.flash.user.email;
+            showUserInfo.value.type = page.props.jetstream.flash.user.type;
+            showUserInfo.value.updated_at = page.props.jetstream.flash.user.updated_at;
             updateForm.reset('name', 'username','type','email');
             hideUpdateModal();            
             nextTick(() => {
@@ -89,6 +99,10 @@ const submitUpdate = () => {
             });
             editSubmitButton.value.status = false;
             editSubmitButton.value.text = 'Actualizar';
+        },
+        onError: () => {
+            editSubmitButton.value.status = false;
+            editSubmitButton.value.text = 'Actualizar';            
         }
     })
 };
@@ -146,7 +160,7 @@ const changeDeleteButton = () => {
 </script>
 
 <template>
-    <AppLayout title="FlowbiteLayout">        
+    <AppLayout title="FlowbiteLayout">       
         <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">                                
                 <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
@@ -198,7 +212,7 @@ const changeDeleteButton = () => {
                                     <td class="px-4 py-3">{{ user.email }}</td>
                                     <td class="px-4 py-3">{{user.type}}</td>
                                     <td class="px-4 py-3">{{ user.church.name }}</td>                                    
-                                    <td class="px-4 py-3">{{ user.created_at }}</td>                                    
+                                    <td class="px-4 py-3">{{ user.created_at_human }}</td>                                    
                                     <td class="px-4 py-3 flex items-center justify-end">
                                         <button @click="showShowModal(user)" :key="user.id" class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-blue-700 dark:hover:text-gray-800" type="button">
                                             <svg class="w-6 h-6 text-gray-800 dark:text-white dark:hover:text-blue-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -245,7 +259,7 @@ const changeDeleteButton = () => {
                             </h2>
                         </div>
                         <div>
-                            <button @click="hideShowModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="readProductModal">
+                            <button @click="hideShowModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white">
                                 <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
                                 <span class="sr-only">Close modal</span>
                             </button>
@@ -258,6 +272,10 @@ const changeDeleteButton = () => {
                         <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.email }}</dd>
                         <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Tipo de Usuario</dt>
                         <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.type }}</dd>
+                        <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Fecha de Creación</dt>
+                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.created_at }}</dd>
+                        <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Ultima Actualización</dt>
+                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.updated_at }}</dd>
                     </dl>
                     <div class="flex justify-between items-center">
                         <div class="flex items-center space-x-3 sm:space-x-4">

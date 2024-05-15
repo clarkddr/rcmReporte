@@ -62,7 +62,7 @@ const logout = () => {
             </button>
             <a href="https://flowbite.com" class="flex items-center justify-between mr-4">
                 <img
-                src="public/logo.png"
+                src="http://iafcjmexicali.com/images/logo.png"
                 class="mr-3 h-8"
                 alt="Flowbite Logo"
                 />

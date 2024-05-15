@@ -42,8 +42,9 @@ class DashboardController extends Controller {
                 'created_at_human' => Carbon::parse($user->created_at)->diffForHumans(),
                 'updated_at_human' => Carbon::parse($user->updated_at)->diffForHumans(),
                 // 'created_at' => Carbon::parse($user->created_at)->toFormattedDayDateString(),
-                'created_at' => ucwords(Carbon::parse($user->created_at)->translatedFormat('D d F Y H:s')),
-                'updated_at' => Carbon::parse($user->updated_at)->toFormattedDayDateString()
+                // 'created_at' => ucwords(Carbon::parse($user->created_at)->translatedFormat('dddd d F Y H:s')),
+                'created_at' => ucwords(Carbon::parse($user->created_at)->isoFormat('dddd D MMMM YYYY H:ss')),
+                'updated_at' => ucwords(Carbon::parse($user->updated_at)->isoFormat('dddd D MMMM YYYY H:ss'))
             ];
         });
         // return $users;
