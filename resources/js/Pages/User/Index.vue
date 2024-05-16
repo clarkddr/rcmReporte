@@ -126,7 +126,9 @@ watch(search, value => {
     
 });
 const cleanFilter = () => {
-    search.value = '';
+    if(search.value != ''){
+        search.value = '';
+    }
     changeFocusToSearch();
 }
 const changeFocusToSearch = () => {

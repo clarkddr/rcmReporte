@@ -64,7 +64,7 @@ const submit = () => {
             </div>
             <div class="mt-4">
                 <InputLabel for="churchname" value="Nombre de Iglesia" />
-                <TextInput id="churchname" v-model="form.churchname" type="text" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-600 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required />
+                <TextInput id="churchname" v-model="form.churchname" type="text" class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-600 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" />
                 <InputError class="mt-2" :message="form.errors.churchname" />
             </div>
             <div class="mt-4">

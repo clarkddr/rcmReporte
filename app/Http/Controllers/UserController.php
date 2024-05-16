@@ -45,13 +45,13 @@ class UserController extends Controller
             'users' => $users,
             'filter' => $request->only(['search'])
         ];
-        return Inertia::render('Users',$data);
+        return Inertia::render('User/Index',$data);
     }
 
     public function store(Request $request){
         $request->validate([
             'name' => 'required',
-            'username' => 'required|unique:users',
+            'username' => 'regex:/^[a-zA-Z0-9._-]+$/|required|unique:users',
             'email' => 'email|unique:users',
             'type' => 'required',
         ]);
@@ -69,10 +69,10 @@ class UserController extends Controller
         return redirect()->route('users');
     }
     public function update(Request $request){
-        $user = User::findOrFail($request->id);        
+        $user = User::findOrFail($request->id);
         $request->validate([
             'name' => 'required',
-            'username' => 'required|unique:users,username,'.$user->id,
+            'username' => 'regex:/^[a-zA-Z0-9._-]+$/|required|unique:users,username,'.$user->id,
             'email' => 'email',
             'type' => 'required',
         ]);
