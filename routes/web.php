@@ -21,5 +21,5 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::post('/users/update',[UserController::class,'update'])->name('user.update');
     Route::get('/users/{user}/delete',[UserController::class, 'destroy'])->name('user.destroy');
     
-    Route::get('/table',[DashboardController::class,'table'])->name('table');    
+    Route::get('/users',[UserController::class,'index'])->name('users');    
 });

@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\Team;
 use App\Models\User;
+use App\Models\Church;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -23,18 +24,32 @@ class CreateNewUser implements CreatesNewUsers
     {
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:255','unique:users'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
             'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
+            'churchname' => ['required', 'string', 'max:255'],
+            'churchnumber' => ['nullable','string', 'max:255'],
+            'churchaddress' => ['required', 'string', 'max:255'],
         ])->validate();
 
-        return DB::transaction(function () use ($input) {
+        $church = new Church;
+        $church->name = $input['churchname'];
+        $church->number = $input['churchnumber'];
+        $church->address = $input['churchaddress'];
+        $church->saveOrFail();        
+        // $input['church_id'] = $church->id;
+        
+        return DB::transaction(function () use ($input,$church) {
             return tap(User::create([
                 'name' => $input['name'],
+                'username' => $input['username'],
                 'email' => $input['email'],
                 'password' => Hash::make($input['password']),
+                'type' => 'admin',
+                'church_id' => $church->id
             ]), function (User $user) {
-                $this->createTeam($user);
+                //$this->createTeam($user);
             });
         });
     }

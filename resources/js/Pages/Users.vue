@@ -122,7 +122,7 @@ const hideDeleteModal = () => {
 const searchInput = ref(null);
 const search = ref(props.filter.search);
 watch(search, value => {    
-    router.get('/table', {search:value},{ preserveState: true});
+    router.get('/users', {search:value},{ preserveState: true});
     
 });
 const cleanFilter = () => {
