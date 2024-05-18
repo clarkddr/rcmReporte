@@ -10,6 +10,7 @@ import TextInput from '@/Components/TextInput.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PaginationFlow from '@/Components/PaginationFlow.vue';
 import { initFlowbite } from 'flowbite';
+import debounce from 'lodash/debounce';
 
 const props = defineProps({
     houses: {type: Object },
@@ -110,10 +111,10 @@ const hideDeleteModal = () => {
     
 const searchInput = ref(null);
 const search = ref(props.filter.search);
-watch(search, value => {    
+watch(search, debounce(value => {    
     router.get('/houses', {search:value},{ preserveState: true});
     
-});
+},300));
 const cleanFilter = () => {
     if(search.value != ''){
         search.value = '';
