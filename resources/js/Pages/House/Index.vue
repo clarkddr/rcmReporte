@@ -12,21 +12,19 @@ import PaginationFlow from '@/Components/PaginationFlow.vue';
 import { initFlowbite } from 'flowbite';
 
 const props = defineProps({
-    users: {type: Object },
+    houses: {type: Object },
     filter: {type: Object }
 });
 
 const showModalState = ref(false);
-const showUserInfo = ref({});
-const showShowModal = (user) => {
+const showHouseInfo = ref({});
+const showShowModal = (house) => {
      showModalState.value = true;
-     showUserInfo.value.id = user.id;
-     showUserInfo.value.name = user.name;
-     showUserInfo.value.username = user.username;
-     showUserInfo.value.email = user.email;
-     showUserInfo.value.type = user.type;
-     showUserInfo.value.created_at = user.created_at;
-     showUserInfo.value.updated_at = user.updated_at;
+     showHouseInfo.value.id = house.id;
+     showHouseInfo.value.number = house.number;
+     showHouseInfo.value.address = house.address;
+     showHouseInfo.value.created_at = house.created_at;
+     showHouseInfo.value.updated_at = house.updated_at;
     };
 const hideShowModal = () => { showModalState.value = false};
 
@@ -34,26 +32,24 @@ const addModalState = ref(false);
 const showAddModal = () => { addModalState.value = true;}
 const hideAddModal = () => { addModalState.value = false; form.reset();}
 const form = useForm({
-    name: '',
-    username: '',
-    email: '',
-    type: '',
+    number: '',
+    address: '',
 });
 const submit = () => {
     changeAddButton();
-    form.post(route('user.store'), {
+    form.post(route('houses.store'), {
         onSuccess: () => {            
-            form.reset('name', 'username','type','email');            
+            form.reset('name', 'number');            
             hideAddModal();
             nextTick(() => {
                 initFlowbite();
             });
             addSubmitButton.value.status = false;
-            addSubmitButton.value.text = 'Guardar Usuario';
+            addSubmitButton.value.text = 'Guardar Casa';
         },
         onError: () => {
             addSubmitButton.value.status = false;
-            addSubmitButton.value.text = 'Guardar Usuario';
+            addSubmitButton.value.text = 'Guardar Casa';
         }
     })
 };
@@ -61,21 +57,17 @@ const submit = () => {
 
 const updateForm = useForm({
         id:'',
-        name: '',
-        username: '',
-        email: '',
-        type: '',
+        number: '',
+        address: '',
         updated_at: '',
     });
 const updateModalState = ref(false);
-const showUpdateModal = (user) => {
+const showUpdateModal = (house) => {
      updateModalState.value = true;
-     updateForm.id = user.id;
-     updateForm.name = user.name;
-     updateForm.username = user.username;
-     updateForm.email = user.email;
-     updateForm.type = user.type;
-     updateForm.updated_at = user.updated_at;   
+     updateForm.id = house.id;
+     updateForm.number = house.number;
+     updateForm.address = house.address;
+     updateForm.updated_at = house.updated_at;   
     }
 const hideUpdateModal = () => { 
     updateModalState.value = false;
@@ -84,15 +76,12 @@ const hideUpdateModal = () => {
 
 const submitUpdate = () => {
     changeEditButton();
-    updateForm.post(route('user.update'), {
-        onSuccess: (page) => {            
-            showUserInfo.value.id = page.props.jetstream.flash.user.id;
-            showUserInfo.value.name = page.props.jetstream.flash.user.name;
-            showUserInfo.value.username = page.props.jetstream.flash.user.username;
-            showUserInfo.value.email = page.props.jetstream.flash.user.email;
-            showUserInfo.value.type = page.props.jetstream.flash.user.type;
-            showUserInfo.value.updated_at = page.props.jetstream.flash.user.updated_at;
-            updateForm.reset('name', 'username','type','email');
+    updateForm.post(route('house.update'), {
+        onSuccess: (page) => {                        
+            showHouseInfo.value.number = page.props.jetstream.flash.house.number;
+            showHouseInfo.value.address = page.props.jetstream.flash.house.address;
+            showHouseInfo.value.updated_at = page.props.jetstream.flash.house.updated_at;
+            updateForm.reset('number', 'address');
             hideUpdateModal();            
             nextTick(() => {
                 initFlowbite();
@@ -108,10 +97,10 @@ const submitUpdate = () => {
 };
 
 const deleteModalState = ref(false);
-const userToDelete = ref({});
-const showDeleteModal = (user) => {
+const houseToDelete = ref({});
+const showDeleteModal = (house) => {
     deleteModalState.value = true;
-    userToDelete.value = user;
+    houseToDelete.value = house;
 }
 const hideDeleteModal = () => {
     deleteModalState.value = false;
@@ -122,7 +111,7 @@ const hideDeleteModal = () => {
 const searchInput = ref(null);
 const search = ref(props.filter.search);
 watch(search, value => {    
-    router.get('/users', {search:value},{ preserveState: true});
+    router.get('/houses', {search:value},{ preserveState: true});
     
 });
 const cleanFilter = () => {
@@ -137,7 +126,7 @@ const changeFocusToSearch = () => {
 
 const addSubmitButton = ref({
     status: false,
-    text: 'Guardar Usuario'
+    text: 'Guardar Casa'
 });
 const changeAddButton = () => {
     addSubmitButton.value.status = true;
@@ -161,9 +150,6 @@ const changeDeleteButton = () => {
     deleteButton.value.status = true;
     deleteButton.value.text = 'Eliminando...';
 }
-
-
-
 </script>
 
 <template>
@@ -201,11 +187,8 @@ const changeDeleteButton = () => {
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" class="px-4 py-3">Nombre</th>
-                                    <th scope="col" class="px-4 py-3">Usuario</th>
-                                    <th scope="col" class="px-4 py-3">Correo</th>
-                                    <th scope="col" class="px-4 py-3">Tipo</th>
-                                    <th scope="col" class="px-4 py-3">Iglesia</th>                                    
+                                    <th scope="col" class="px-4 py-3">Numero</th>
+                                    <th scope="col" class="px-4 py-3">Direccion</th>
                                     <th scope="col" class="px-4 py-3">Creado</th>                                    
                                     <th scope="col" class="px-4 py-3">
                                         <span class="sr-only">Actions</span>
@@ -213,26 +196,23 @@ const changeDeleteButton = () => {
                                 </tr>
                             </thead>
                             <tbody> 
-                                <tr v-for="(user, index) in users.data" :key="user.id" class="border-b dark:border-gray-700">
-                                    <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{user.name}}</th>
-                                    <td class="px-4 py-3">{{ user.username }}</td>
-                                    <td class="px-4 py-3">{{ user.email }}</td>
-                                    <td class="px-4 py-3">{{user.type}}</td>
-                                    <td class="px-4 py-3">{{ user.church.name }}</td>                                    
-                                    <td class="px-4 py-3">{{ user.created_at_human }}</td>                                    
+                                <tr v-for="(house, index) in houses.data" :key="house.id" class="border-b dark:border-gray-700">
+                                    <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{house.number}}</th>
+                                    <td class="px-4 py-3">{{ house.address }}</td>
+                                    <td class="px-4 py-3">{{ house.created_at_human }}</td>                                    
                                     <td class="px-4 py-3 flex items-center justify-end">
-                                        <button @click="showShowModal(user)" :key="user.id" class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-blue-700 dark:hover:text-gray-800" type="button">
+                                        <button @click="showShowModal(house)" :key="house.id" class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-blue-700 dark:hover:text-gray-800" type="button">
                                             <svg class="w-6 h-6 text-gray-800 dark:text-white dark:hover:text-blue-700" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-width="2" d="M21 12c0 1.2-4.03 6-9 6s-9-4.8-9-6c0-1.2 4.03-6 9-6s9 4.8 9 6Z"/>
                                                 <path stroke="currentColor" stroke-width="2" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                             </svg>
                                         </button>
-                                        <button @click="showUpdateModal(user)" :key="user.id" class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 dark:hover:text-gray-900 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
+                                        <button @click="showUpdateModal(house)" :key="house.id" class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 dark:hover:text-gray-900 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
                                             <svg class="w-6 h-6 text-gray-800 dark:text-white dark:hover:text-green-600" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m16 10 3-3m0 0-3-3m3 3H5v3m3 4-3 3m0 0 3 3m-3-3h14v-3"/>
                                             </svg>
                                         </button>
-                                        <button @click="showDeleteModal(user)" :key="user.id" class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 dark:hover:text-gray-900 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
+                                        <button @click="showDeleteModal(house)" :key="house.id" class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 dark:hover:text-gray-900 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
                                             <svg class="w-6 h-6 text-gray-800 dark:text-white dark:hover:text-red-900" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
                                                 <path fill-rule="evenodd" d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" clip-rule="evenodd"/>
                                             </svg>
@@ -243,14 +223,14 @@ const changeDeleteButton = () => {
                         </table>
                     </div>
                     <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
-                        <span v-show="users.total === 0" class="font-semibold text-gray-900 dark:text-white">{{ 'No hay resultados' }}</span>
-                        <span v-show="users.total > 0" class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                        <span v-show="houses.total === 0" class="font-semibold text-gray-900 dark:text-white">{{ 'No hay resultados' }}</span>
+                        <span v-show="houses.total > 0" class="text-sm font-normal text-gray-500 dark:text-gray-400">
                             Mostrando
-                            <span class="font-semibold text-gray-900 dark:text-white">{{ users.from+' a '+users.to }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ houses.from+' a '+houses.to }}</span>
                             de
-                            <span class="font-semibold text-gray-900 dark:text-white">{{ users.total }}</span>
+                            <span class="font-semibold text-gray-900 dark:text-white">{{ houses.total }}</span>
                         </span>                        
-                    <PaginationFlow :links="users.links" :first="users.first_page_url" :last="users.last_page_url"/>                    
+                    <PaginationFlow :links="houses.links" :first="houses.first_page_url" :last="houses.last_page_url"/>                    
                     </nav>
                 </div>
             </div>
@@ -262,7 +242,7 @@ const changeDeleteButton = () => {
                     <div class="flex justify-between mb-4 rounded-t sm:mb-5">
                         <div class="text-lg text-gray-900 md:text-xl dark:text-white">                            
                             <h2 class="font-semibold ">
-                                {{ showUserInfo.name }}
+                                {{ showHouseInfo.name }}
                             </h2>
                         </div>
                         <div>
@@ -273,24 +253,22 @@ const changeDeleteButton = () => {
                         </div>
                     </div>
                     <dl>
-                        <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Usuario</dt>
-                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.username }}</dd>
-                        <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Correo</dt>
-                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.email }}</dd>
-                        <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Tipo de Usuario</dt>
-                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.type }}</dd>
+                        <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Numero</dt>
+                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showHouseInfo.number }}</dd>
+                        <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Direccion</dt>
+                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showHouseInfo.address }}</dd>
                         <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Fecha de Creación</dt>
-                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.created_at }}</dd>
+                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showHouseInfo.created_at }}</dd>
                         <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Ultima Actualización</dt>
-                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showUserInfo.updated_at }}</dd>
+                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showHouseInfo.updated_at }}</dd>
                     </dl>
                     <div class="flex justify-between items-center">
                         <div class="flex items-center space-x-3 sm:space-x-4">
-                            <button @click="showUpdateModal(showUserInfo)" type="button" class="text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
+                            <button @click="showUpdateModal(showHouseInfo)" type="button" class="text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
                                 <svg aria-hidden="true" class="mr-1 -ml-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"></path><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd"></path></svg>
                                 Editar
                             </button>               
-                            <button @click="showDeleteModal(showUserInfo)" type="button" class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
+                            <button @click="showDeleteModal(showHouseInfo)" type="button" class="inline-flex items-center text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
                                 <svg aria-hidden="true" class="w-5 h-5 mr-1.5 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                                 Eliminar
                             </button>
@@ -307,7 +285,7 @@ const changeDeleteButton = () => {
                 <!-- Modal header -->
                 <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Agregar Usuario
+                        Agregar Casa
                     </h3>
                     <button @click="hideAddModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
@@ -318,35 +296,18 @@ const changeDeleteButton = () => {
                 <form @submit.prevent="submit">
                     <div class="grid gap-4 mb-4 sm:grid-cols-2">
                         <div>
-                            <InputLabel for="name" value="Nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
-                            <TextInput id="name" v-model="form.name" type="text" required placeholder="Nombre y Apellido" autocomplete="new-name"
+                            <InputLabel for="number" value="Numero" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
+                            <TextInput id="number" v-model="form.number" type="text" required placeholder="Numero de casa de bendición" autocomplete="new-number"
                             class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
-                            <InputError class="mt-2" :message="form.errors.name" />                            
+                            <InputError class="mt-2" :message="form.errors.number" />                            
                             <!-- <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
                             <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required=""> -->
                         </div>
                         <div>
-                            <InputLabel for="Nombre de Usuario" value="Nombre de usuario" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
-                            <TextInput name="Nombre de Usuario" id="username" v-model="form.username" type="text" required placeholder="Nombre de usuario" autocomplete="new-username"
+                            <InputLabel for="Nombre de Usuario" value="Dirección" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
+                            <TextInput name="Nombre de Usuario" id="username" v-model="form.address" type="text" required placeholder="Dirección" autocomplete="new-address"
                             class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
-                            <InputError class="mt-2" :message="form.errors.username" />                            
-                        </div>
-                        <div>
-                            <InputLabel for="email" value="Correo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
-                            <TextInput id="email" v-model="form.email" type="email" placeholder="Correo electrónico" autocomplete="new-email"
-                            class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
-                            <InputError class="mt-2" :message="form.errors.email" />
-                        </div>
-                        <div>
-                            <label for="Tipo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rol</label>
-                            <select name="Tipo" v-model="form.type" id="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                <optgroup label="Seleccionar Tipo">
-                                    <option value="admin">Administrador</option>
-                                    <option value="user">Usuario</option>
-                                    <option value="member">Miembro</option>
-                                </optgroup>
-                            </select>
-                            <InputError class="mt-2" :message="form.errors.type" />
+                            <InputError class="mt-2" :message="form.errors.address" />                            
                         </div>
                     </div>
                     <button :disabled="addSubmitButton.status" @click="submit()" type="submit" :class="{'cursor-not-allowed opacity-50':addSubmitButton.status}" class="text-white inline-flex items-center bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">
@@ -369,7 +330,7 @@ const changeDeleteButton = () => {
                 <!-- Modal header -->
                 <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                        Editar Usuario
+                        Editar Casa
                     </h3>
                     <button @click="hideUpdateModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white">
                         <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
@@ -380,35 +341,18 @@ const changeDeleteButton = () => {
                 <form @submit.prevent="submitUpdate">
                     <div class="grid gap-4 mb-4 sm:grid-cols-2">
                         <div>
-                            <InputLabel for="name" value="Nombre" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
-                            <TextInput id="name" v-model="updateForm.name" type="text" required placeholder="Nombre y Apellido" autocomplete="new-name"
+                            <InputLabel for="name" value="Numero" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
+                            <TextInput id="name" v-model="updateForm.number" type="text" required placeholder="Nombre y Apellido" autocomplete="new-number"
                             class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
-                            <InputError class="mt-2" :message="updateForm.errors.name" />                            
+                            <InputError class="mt-2" :message="updateForm.errors.number" />                            
                             <!-- <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
                             <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required=""> -->
                         </div>
                         <div>
-                            <InputLabel for="Nombre de Usuario" value="Nombre de usuario" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
-                            <TextInput name="Nombre de Usuario" id="username" v-model="updateForm.username" type="text" required placeholder="Nombre de usuario" autocomplete="new-username"
+                            <InputLabel for="Nombre de Usuario" value="Direccion" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
+                            <TextInput name="Nombre de Usuario" id="username" v-model="updateForm.address" type="text" required placeholder="Nombre de usuario" autocomplete="new-address"
                             class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
-                            <InputError class="mt-2" :message="updateForm.errors.username" />                            
-                        </div>
-                        <div>
-                            <InputLabel for="email" value="Correo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
-                            <TextInput id="email" v-model="updateForm.email" type="email" placeholder="Correo electrónico" autocomplete="new-email"
-                            class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
-                            <InputError class="mt-2" :message="updateForm.errors.email" />
-                        </div>
-                        <div>
-                            <label for="Tipo" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Rol</label>
-                            <select name="Tipo" v-model="updateForm.type" id="type" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
-                                <optgroup label="Seleccionar Tipo">
-                                    <option value="admin">Administrador</option>
-                                    <option value="user">Usuario</option>
-                                    <option value="member">Miembro</option>
-                                </optgroup>
-                            </select>
-                            <InputError class="mt-2" :message="updateForm.errors.type" />
+                            <InputError class="mt-2" :message="updateForm.errors.address" />                            
                         </div>
                     </div>
                         
@@ -429,11 +373,11 @@ const changeDeleteButton = () => {
                 <h3>Esta seguro de eliminar?</h3>
             </template>
             <template #content>
-                El usuario <span class="font-bold">{{ userToDelete.name }}</span>  será borrado.
+                La casa <span class="font-bold">{{ houseToDelete.number }}</span>  será borrado.
             </template>
             <template #footer>
                 <SecondaryButton class="mx-1" @click="hideDeleteModal">Cancelar</SecondaryButton>
-                <Link :disabled="deleteButton" @click="changeDeleteButton" :href="'/users/'+ userToDelete.id +'/delete'" :type="'button'" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 mx-1 rounded inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:ring-offset-2 transition ease-in-out duration-150">
+                <Link :disabled="deleteButton" @click="changeDeleteButton" :href="'/house/delete/'+ houseToDelete.id" :type="'button'" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 mx-1 rounded inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:ring-offset-2 transition ease-in-out duration-150">
                     <svg v-if="!deleteButton.status" aria-hidden="true" class="w-6 h-6 mx-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                     <svg v-if="deleteButton.status" aria-hidden="true" role="status" class="inline w-6 h-6 mx-1 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>

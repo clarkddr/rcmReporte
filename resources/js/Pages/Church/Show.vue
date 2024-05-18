@@ -1,6 +1,7 @@
 <script setup>
 import FlowbiteLayout from '@/Layouts/FlowbiteLayout.vue';
 import UpdateChurchInformationForm from '@/Pages/Church/Partials/UpdateChurchInformationForm.vue';
+import SectionBorder from '@/Components/SectionBorder.vue';
 
 defineProps({
     church: Object,

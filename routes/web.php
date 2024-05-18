@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChurchController;
+use App\Http\Controllers\HouseController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -25,4 +26,16 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     
     Route::get('/church',[ChurchController::class,'show'])->name('church.show');
     Route::post('/church/update',[ChurchController::class,'update'])->name('church.update');
+    
+    Route::post('/house/update',[HouseController::class,'update'])->name('house.update');
+    Route::get('/house/delete/{house}',[HouseController::class,'destroy'])->name('house.destroy');
+    Route::resource('/houses',HouseController::class);
+    // GET /posts - index
+    // GET /posts/create - create
+    // POST /posts - store
+    // GET /posts/{post} - show
+    // GET /posts/{post}/edit - edit
+    // PUT/PATCH /posts/{post} - update
+    // DELETE /posts/{post} - destroy
+
 });

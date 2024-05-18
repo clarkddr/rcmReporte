@@ -43,6 +43,6 @@ class DatabaseSeeder extends Seeder
             'password' => 'clarK2312',
             'type' => 'user'            
         ]);
-        User::factory(100)->create();
+        User::factory(47)->create();
     }
 }
