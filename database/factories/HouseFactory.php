@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class HouseFactory extends Factory
 {
+    private static $incrementalId = 1;
     /**
      * Define the model's default state.
      *
@@ -17,7 +18,11 @@ class HouseFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'number' => self::$incrementalId++,
+            'members_quantity' => fake()->randomNumber(2),
+            'address' => fake()->streetAddress(), 
+            'church_id' => 1,
+            'network_id' => 1,
         ];
     }
 }

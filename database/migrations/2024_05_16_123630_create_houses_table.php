@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('houses', function (Blueprint $table) {
             $table->id();
-            $table->string('number');
+            $table->integer('number');
             $table->string('address');
             $table->foreignId('church_id');
-            $table->string('network_id');
+            $table->foreignId('network_id');
+            $table->integer('members_quantity');
+            //$table->string('network_id');
             $table->timestamps();
         });
     }

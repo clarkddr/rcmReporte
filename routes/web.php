@@ -26,9 +26,7 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     
     Route::get('/church',[ChurchController::class,'show'])->name('church.show');
     Route::post('/church/update',[ChurchController::class,'update'])->name('church.update');
-    
-    Route::post('/house/update',[HouseController::class,'update'])->name('house.update');
-    Route::get('/house/delete/{house}',[HouseController::class,'destroy'])->name('house.destroy');
+
     Route::resource('/houses',HouseController::class);
     // GET /posts - index
     // GET /posts/create - create

@@ -16,6 +16,8 @@ class DashboardController extends Controller {
             'date' => now()->subMinute()->diffForHumans()
         ];
 
+        // dd(User::with('church')->find(1));
+
         return Inertia::render('Dashboard',$data);
     }
 }

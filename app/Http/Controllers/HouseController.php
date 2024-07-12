@@ -19,6 +19,7 @@ class HouseController extends Controller {
             return [
                 'id' => $house->id,
                 'number' => $house->number,
+                'members_quantity' => $house->members_quantity,
                 'address' => $house->address,
                 'created_at_human' => Carbon::parse($house->created_at)->diffForHumans(),
                 'updated_at_human' => Carbon::parse($house->updated_at)->diffForHumans(),
@@ -48,6 +49,7 @@ class HouseController extends Controller {
         
         $house = new House();
         $house->church_id = 1;
+        $house->members_quantity = 1;//$request->members_quantity;
         $house->network_id = 1;
         $house->number = $request->number;
         $house->address = $request->address;
@@ -59,7 +61,12 @@ class HouseController extends Controller {
      * Display the specified resource.
      */
     public function show(House $house) {
-        //
+        $house = House::findOrFail($house);
+        $data = [
+            'house' => $house
+        ];
+        dd($data);
+        return Inertia::render('House/Show',$data);
     }
 
     /**
@@ -72,6 +79,7 @@ class HouseController extends Controller {
             'address' => 'required',
         ]);
         $house->number = $request->number;
+        $house->members_quantity = $request->members_quantity;
         $house->address = $request->address;
         $house->saveOrFail();                
         $newHouse = [

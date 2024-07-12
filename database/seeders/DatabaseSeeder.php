@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Church;
+use App\Models\House;
+use Database\Factories\HouseFactory;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -43,6 +45,7 @@ class DatabaseSeeder extends Seeder
             'password' => 'clarK2312',
             'type' => 'user'            
         ]);
-        User::factory(47)->create();
+        User::factory(20)->create();
+        House::factory(20)->create();
     }
 }

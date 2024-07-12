@@ -8,6 +8,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import PaginationFlow from '@/Components/PaginationFlow.vue';
 import { initFlowbite } from 'flowbite';
 import debounce from 'lodash/debounce';
@@ -23,6 +24,7 @@ const showShowModal = (house) => {
      showModalState.value = true;
      showHouseInfo.value.id = house.id;
      showHouseInfo.value.number = house.number;
+     showHouseInfo.value.members_quantity = house.members_quantity;
      showHouseInfo.value.address = house.address;
      showHouseInfo.value.created_at = house.created_at;
      showHouseInfo.value.updated_at = house.updated_at;
@@ -34,13 +36,14 @@ const showAddModal = () => { addModalState.value = true;}
 const hideAddModal = () => { addModalState.value = false; form.reset();}
 const form = useForm({
     number: '',
+    members_quantity: '',
     address: '',
 });
 const submit = () => {
     changeAddButton();
     form.post(route('houses.store'), {
         onSuccess: () => {            
-            form.reset('name', 'number');            
+            form.reset('name', 'number', 'members_quantity');            
             hideAddModal();
             nextTick(() => {
                 initFlowbite();
@@ -60,6 +63,7 @@ const updateForm = useForm({
         id:'',
         number: '',
         address: '',
+        members_quantity: 0,
         updated_at: '',
     });
 const updateModalState = ref(false);
@@ -67,6 +71,7 @@ const showUpdateModal = (house) => {
      updateModalState.value = true;
      updateForm.id = house.id;
      updateForm.number = house.number;
+     updateForm.members_quantity = house.members_quantity;
      updateForm.address = house.address;
      updateForm.updated_at = house.updated_at;   
     }
@@ -75,14 +80,15 @@ const hideUpdateModal = () => {
     updateForm.errors = {};
 }
 
-const submitUpdate = () => {
+const submitUpdate = (houseId) => {
     changeEditButton();
-    updateForm.post(route('house.update'), {
+    updateForm.patch(route('houses.update', houseId), {
         onSuccess: (page) => {                        
             showHouseInfo.value.number = page.props.jetstream.flash.house.number;
             showHouseInfo.value.address = page.props.jetstream.flash.house.address;
+            showHouseInfo.value.members_quantity = page.props.jetstream.flash.house.members_quantity;
             showHouseInfo.value.updated_at = page.props.jetstream.flash.house.updated_at;
-            updateForm.reset('number', 'address');
+            updateForm.reset('number', 'address','members_quantity');
             hideUpdateModal();            
             nextTick(() => {
                 initFlowbite();
@@ -108,7 +114,23 @@ const hideDeleteModal = () => {
     deleteButton.value.status = false;
     deleteButton.value.text = 'Eliminar';
 }
-    
+
+const deleteForm = useForm({
+        id:''
+});
+const submitDelete = (houseId) => {
+    changeDeleteButton();
+    deleteForm.delete(route('houses.destroy', houseId), {
+        onSuccess: () => {
+            hideDeleteModal();
+            hideShowModal();
+        }     
+
+    });
+};
+
+
+
 const searchInput = ref(null);
 const search = ref(props.filter.search);
 watch(search, debounce(value => {    
@@ -151,6 +173,8 @@ const changeDeleteButton = () => {
     deleteButton.value.status = true;
     deleteButton.value.text = 'Eliminando...';
 }
+
+
 </script>
 
 <template>
@@ -168,7 +192,7 @@ const changeDeleteButton = () => {
                                             <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                    <TextInput autofocus v-model="search" ref="searchInput" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Buscar por nombre, usuario o correo" />
+                                    <TextInput autofocus v-model="search" ref="searchInput" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Buscar por número o dirección" />
                                 </div>
                                 <button @click="cleanFilter" type="button" class="mx-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-full text-xs p-1.5 text-center inline-flex items-center me-1 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                                     <svg class="p-0 m-0 w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12l4-4m-4 4 4 4"/></svg>                                    <span class="sr-only">Icon description</span>
@@ -190,7 +214,8 @@ const changeDeleteButton = () => {
                                 <tr>
                                     <th scope="col" class="px-4 py-3">Numero</th>
                                     <th scope="col" class="px-4 py-3">Direccion</th>
-                                    <th scope="col" class="px-4 py-3">Creado</th>                                    
+                                    <th scope="col" class="px-4 py-3"># de Miembros</th>
+                                    <th scope="col" class="px-4 py-3">Creado</th>
                                     <th scope="col" class="px-4 py-3">
                                         <span class="sr-only">Actions</span>
                                     </th>
@@ -200,6 +225,7 @@ const changeDeleteButton = () => {
                                 <tr v-for="(house, index) in houses.data" :key="house.id" class="border-b dark:border-gray-700">
                                     <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{house.number}}</th>
                                     <td class="px-4 py-3">{{ house.address }}</td>
+                                    <td class="px-4 py-3">{{ house.members_quantity }}</td>
                                     <td class="px-4 py-3">{{ house.created_at_human }}</td>                                    
                                     <td class="px-4 py-3 flex items-center justify-end">
                                         <button @click="showShowModal(house)" :key="house.id" class="inline-flex items-center p-0.5 text-sm font-medium text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-blue-700 dark:hover:text-gray-800" type="button">
@@ -242,9 +268,9 @@ const changeDeleteButton = () => {
                     <!-- Modal header -->
                     <div class="flex justify-between mb-4 rounded-t sm:mb-5">
                         <div class="text-lg text-gray-900 md:text-xl dark:text-white">                            
-                            <h2 class="font-semibold ">
-                                {{ showHouseInfo.name }}
-                            </h2>
+                            <h1 class="font-semibold font-size-xl">
+                                {{ 'Casa de Bendición' }}
+                            </h1>
                         </div>
                         <div>
                             <button @click="hideShowModal" type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 inline-flex dark:hover:bg-gray-600 dark:hover:text-white">
@@ -258,6 +284,8 @@ const changeDeleteButton = () => {
                         <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showHouseInfo.number }}</dd>
                         <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Direccion</dt>
                         <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showHouseInfo.address }}</dd>
+                        <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white"># de Miembros</dt>
+                        <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showHouseInfo.members_quantity }}</dd>
                         <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Fecha de Creación</dt>
                         <dd class="mb-4 font-light text-gray-500 sm:mb-5 dark:text-gray-400">{{ showHouseInfo.created_at }}</dd>
                         <dt class="mb-2 font-semibold leading-none text-gray-900 dark:text-white">Ultima Actualización</dt>
@@ -300,7 +328,15 @@ const changeDeleteButton = () => {
                             <InputLabel for="number" value="Numero" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
                             <TextInput id="number" v-model="form.number" type="text" required placeholder="Numero de casa de bendición" autocomplete="new-number"
                             class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
-                            <InputError class="mt-2" :message="form.errors.number" />                            
+                            <InputError class="mt-2" :message="form.errors.number" />
+                            <!-- <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
+                            <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required=""> -->
+                        </div>
+                        <div>
+                            <InputLabel for="quantity" value="Cantidad" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
+                            <TextInput id="quantity" v-model="form.members_quantity" type="text" required placeholder="Cantidad de hermanos" autocomplete="new-number"
+                            class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
+                            <InputError class="mt-2" :message="form.errors.members_quantity" />
                             <!-- <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
                             <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required=""> -->
                         </div>
@@ -339,7 +375,7 @@ const changeDeleteButton = () => {
                     </button>
                 </div>
                 <!-- Modal body -->
-                <form @submit.prevent="submitUpdate">
+                <form @submit.prevent="submitUpdate(updateForm.id)">
                     <div class="grid gap-4 mb-4 sm:grid-cols-2">
                         <div>
                             <InputLabel for="name" value="Numero" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
@@ -348,6 +384,12 @@ const changeDeleteButton = () => {
                             <InputError class="mt-2" :message="updateForm.errors.number" />                            
                             <!-- <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nombre</label>
                             <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required=""> -->
+                        </div>
+                        <div>
+                            <InputLabel for="quantity" value="Numero" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
+                            <TextInput id="quantity" v-model="updateForm.members_quantity" type="text" required placeholder="" autocomplete="new-number"
+                            class="bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"/>
+                            <InputError class="mt-2" :message="updateForm.errors.members_quantity" />
                         </div>
                         <div>
                             <InputLabel for="Nombre de Usuario" value="Direccion" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"/>
@@ -378,13 +420,22 @@ const changeDeleteButton = () => {
             </template>
             <template #footer>
                 <SecondaryButton class="mx-1" @click="hideDeleteModal">Cancelar</SecondaryButton>
-                <Link :disabled="deleteButton" @click="changeDeleteButton" :href="'/house/delete/'+ houseToDelete.id" :type="'button'" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 mx-1 rounded inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:ring-offset-2 transition ease-in-out duration-150">
+                <DangerButton
+                        class="ms-3"
+                        :class="{ 'opacity-25': deleteForm.processing }"
+                        :disabled="deleteForm.processing"
+                        @click="submitDelete(houseToDelete.id)"
+                    >
                     <svg v-if="!deleteButton.status" aria-hidden="true" class="w-6 h-6 mx-1 -ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>
                     <svg v-if="deleteButton.status" aria-hidden="true" role="status" class="inline w-6 h-6 mx-1 text-white animate-spin" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="#E5E7EB"/>
                     <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentColor"/></svg>
-                    {{deleteButton.text}}
-                </Link>
+                    {{deleteButton.text}}                        
+                    </DangerButton>
+                <!-- <Link method="delete" as="button" @click="changeDeleteButton" :href="'/houses/delete/' + houseToDelete.id" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-1 mx-1 rounded inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest focus:ring-offset-2 transition ease-in-out duration-150">
+
+
+                </Link> -->
 
             </template>
         </DialogModal>
