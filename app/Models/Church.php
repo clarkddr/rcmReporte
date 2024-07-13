@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Church extends Model
 {
@@ -17,6 +17,14 @@ class Church extends Model
 
     public function users(): HasMany {
         return $this->hasMany(User::class);
+    }
+
+    public function districts(): HasMany {
+        return $this->hasMany(District::class);
+    }
+
+    public function zones(): HasManyThrough {
+        return $this->hasManyThrough(Zone::class, District::class);
     }
 
     public function houses(): HasMany {

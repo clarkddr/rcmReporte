@@ -4,6 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use App\Models\Church;
+use App\Models\District;
+use App\Models\Zone;
+use App\Models\Sector;
+use App\Models\Network;
 use App\Models\House;
 use Database\Factories\HouseFactory;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -20,6 +24,67 @@ class DatabaseSeeder extends Seeder
             'name' => 'El tabernaculo',
             'number' => '22',
             'address' => 'Blvd 1810 #1900 Col. Hidalgo',
+        ]);
+
+        District::factory()->create([
+            'number' => 1,
+            'church_id' => Church::find(1),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Zone::factory()->create([
+            'number' => 1,
+            'district_id' => District::find(1),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Sector::factory()->create([
+            'number' => 1,
+            'zone_id' => Zone::find(1),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Sector::factory()->create([
+            'number' => 2,
+            'zone_id' => Zone::find(1),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Network::factory()->create([
+            'number' => 1,
+            'sector_id' => Sector::find(1),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Network::factory()->create([
+            'number' => 2,
+            'sector_id' => Sector::find(1),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Network::factory()->create([
+            'number' => 3,
+            'sector_id' => Sector::find(1),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Network::factory()->create([
+            'number' => 4,
+            'sector_id' => Sector::find(1),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Network::factory()->create([
+            'number' => 1,
+            'sector_id' => Sector::find(2),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        Network::factory()->create([
+            'number' => 2,
+            'sector_id' => Sector::find(2),
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
         
         User::factory()->create([

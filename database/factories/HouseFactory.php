@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Network;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -22,7 +23,7 @@ class HouseFactory extends Factory
             'members_quantity' => fake()->randomNumber(2),
             'address' => fake()->streetAddress(), 
             'church_id' => 1,
-            'network_id' => 1,
+            'network_id' => Network::inRandomOrder()->first()->id,
         ];
     }
 }

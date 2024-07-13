@@ -74,8 +74,4 @@ class User extends Authenticatable
         return $this->belongsTo(Church::class)->withDefault();
     }
 
-    public function houses(): BelongsToMany {
-        return $this->belongsToMany(House::class);
-    }
-
 }
