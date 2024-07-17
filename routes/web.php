@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChurchController;
 use App\Http\Controllers\HouseController;
+use App\Http\Controllers\NetworkController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -28,6 +29,9 @@ Route::middleware(['auth:sanctum',config('jetstream.auth_session'),'verified',])
     Route::post('/church/update',[ChurchController::class,'update'])->name('church.update');
 
     Route::resource('/houses',HouseController::class);
+
+    Route::resource('/networks',NetworkController::class)->only(['index','show','store']);
+
     // GET /posts - index
     // GET /posts/create - create
     // POST /posts - store

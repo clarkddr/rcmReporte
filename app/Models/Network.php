@@ -11,8 +11,16 @@ class Network extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['number','sector_id'];
+
     public function sector(): BelongsTo {
         return $this->belongsTo(Sector::class);
+    }
+    public function zone(): BelongsTo {
+        return $this->belongsTo(Zone::class);
+    }
+    public function district(): BelongsTo {
+        return $this->belongsTo(District::class);
     }
 
     public function houses(): HasMany {

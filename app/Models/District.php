@@ -20,6 +20,10 @@ class District extends Model
         return $this->hasMany(Zone::class);
     }
 
+    public function sectors(): HasManyThrough {
+        return $this->hasManyThrough(Sector::class,Zone::class);
+    }
+
     public function houses(): HasManyThrough {
         // Utilizar una consulta personalizada para acceder a las casas a través de las networks, sectores, zonas y distritos
         return $this->hasManyThrough(

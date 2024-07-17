@@ -39,12 +39,12 @@ class UserController extends Controller
                 'created_at' => ucwords(Carbon::parse($user->created_at)->isoFormat('dddd D MMMM YYYY H:ss')),
                 'updated_at' => ucwords(Carbon::parse($user->updated_at)->isoFormat('dddd D MMMM YYYY H:ss'))
             ];
-        });
-        // return $users;
+        });        
+        
         $data = [
             'users' => $users,
             'filter' => $request->only(['search'])
-        ];
+        ];        
         return Inertia::render('User/Index',$data);
     }
 

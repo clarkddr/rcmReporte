@@ -82,7 +82,7 @@ import { Link } from '@inertiajs/vue3';
             ></path>
         </svg>
         <span class="flex-1 ml-3 text-left whitespace-nowrap"
-        >Sales</span
+        >Niveles</span
         >
         <svg
         aria-hidden="true"
@@ -100,10 +100,10 @@ import { Link } from '@inertiajs/vue3';
     </button>
     <ul id="dropdown-sales" class="hidden py-2 space-y-2">
         <li>
-            <a
-            href="#"
+            <Link
+            :href="route('networks.index')"
             class="flex items-center p-2 pl-11 w-full text-base font-medium text-gray-900 rounded-lg transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-            >Products</a
+            >Redes</Link
             >
         </li>
         <li>

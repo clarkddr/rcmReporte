@@ -12,13 +12,19 @@ class Sector extends Model
 {
     use HasFactory;
 
+    
     public function zone(): BelongsTo {
         return $this->belongsTo(Zone::class);
+    }
+    
+    public function district() {
+        return $this->hasOneThrough(District::class, Zone::class, 'id', 'id', 'zone_id', 'district_id');
     }
 
     public function networks(): HasMany {
         return $this->hasMany(Network::class);
     }
+
 
     public function houses(): HasManyThrough {
         return $this->hasManyThrough(House::class, Network::class);
